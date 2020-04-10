@@ -1,22 +1,27 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Universal Chat{% endblock %}</h1>
+  <h1>{% block title %} Universal Chat {% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  {% for message in messages %}
-    <article class="post">
-      <header>
+  <div class="user-interface">
+    {% for message in messages %}
+      <div {% if g.user['username'] == message['sender'] %} class="usersmessage" {% else %} class="message" {% endif %}>
         <div>
-          <h1>{{ message['msg'] }}</h1>
-          <div class="about">by {{ message['sender'] }} on {{ message['sent_at'].strftime('%Y-%m-%d') }}</div>
+          <p class="msg-body">{{ message['msg'] }}</p>
+          <p class="msg-info">by <span class="message-sender">{{ message['sender'] }} </span> at {{ message['time_sent'].strftime("%I:%M") }}</p>
         </div>
-        
-      </header>
-    </article>
-    {% if not loop.last %}
-      <hr>
-    {% endif %}
-  {% endfor %}
+      </div>
+      <br>
+    {% endfor %}
+    <form class="message-controls" method="post">
+      <input type="text" name="messagebox" id="messagebox">
+      <input id="sendmessagebutton" type="submit" value="send">
+    </form>
+  </div>
 {% endblock %}
+
+
+
+
