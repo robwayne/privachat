@@ -5,20 +5,32 @@
 {% endblock %}
 
 {% block content %}
-  <div class="user-interface">
-    {% for message in messages %}
-      <div {% if g.user['username'] == message['sender'] %} class="usersmessage" {% else %} class="message" {% endif %}>
-        <div>
-          <p class="msg-body">{{ message['msg'] }}</p>
-          <p class="msg-info">by <span class="message-sender">{{ message['sender'] }} </span> at {{ message['time_sent'].strftime("%I:%M") }}</p>
-        </div>
+  <div class="main-container">
+    <div class="user-list">
+      <div class="online-users">
+        {% for user in onlineUsers %}
+          <div class="online-user">{{ user['username'] }}</div>
+        {% endfor %}
       </div>
-      <br>
-    {% endfor %}
-    <form class="message-controls" method="post">
-      <input type="text" name="messagebox" id="messagebox">
-      <input id="sendmessagebutton" type="submit" value="send">
-    </form>
+    </div>
+    <div class="right-container">
+      <div class="chat-container" id="chat-container">
+        {% for message in messages %}
+          <div {% if g.user['username'] == message['sender'] %} class="usersmessage" {% else %} class="message" {% endif %}>
+            <div>
+              <p class="msg-body">{{ message['msg'] }}</p>
+              <p class="msg-info">by <span class="message-sender">{{ message['sender'] }} </span> at {{ message['time_sent'].strftime("%I:%M") }}</p>
+            </div>
+          </div>
+          <br>
+        {% endfor %}
+      </div>
+      <form class="message-controls" method="post">
+        <input type="text" name="messagebox" id="messagebox" autocomplete="off" autocapitalize="off" autofocus>
+        <input id="sendmessagebutton" type="submit" value="send">
+      </form>
+    </div>
+    
   </div>
 {% endblock %}
 
