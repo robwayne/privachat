@@ -2,15 +2,15 @@ from flask import Blueprint, g, redirect, render_template, request, url_for
 from werkzeug.exceptions import abort
 from datetime import datetime
 
-
-
 from blueprints.auth import loginRequired
 from db.sqlitedb import getDatabase
 
 blueprint = Blueprint('messages', __name__)
 
-# https://flask.palletsprojects.com/en/1.1.x/tutorial/blog/
-
+@blueprint.route('/test')
+def hello():
+	print("tessttutututututinnnng")
+	return 'test the world'
 
 @blueprint.route('/', methods=['GET', 'POST'])
 @loginRequired  # require each user to be logged in before viewing the home page

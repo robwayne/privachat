@@ -1,14 +1,31 @@
 import os
 from pathlib import Path
 import functools
-from flask import (Blueprint, flash, g, redirect,
-                   render_template, request, session, url_for, current_app)
+from flask import (
+	Blueprint, 
+	flash, g, 
+	redirect, render_template, 
+	request, session, 
+	url_for, current_app
+)
+				   
+from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from db.sqlitedb import getDatabase
 
 blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 
+UPLOADS_FOLDER = os.path.realpath(os.path.join('static', 'images/uploads'))
+ALLOWED_EXTENSIONS = ["JPEG", "JPG", "PNG", "GIF"]
+
+def checkImageFilename(filename):
+	if filename != "" and "." in filename:
+		extension = filename.split(".")[1]
+		if extension.upper() in ALLOWED_EXTENSIONS:
+			return True
+
+	return False
 
 @blueprint.route('/register', methods=['GET', 'POST'])
 def register():
@@ -42,11 +59,14 @@ def register():
 		if error is None:
 			# if we have valid pwd and username we can then register the user
 			if profileImage:
-				uploadsDirPath = os.path.join(current_app.instance_path, 'images/uploads')
-				Path(uploadsDirPath).mkdir(parents=True, exist_ok=True)
-				if profileImage.filename != "":
-					imagePath = os.path.join(uploadsDirPath, profileImage.filename)
+				Path(UPLOADS_FOLDER).mkdir(parents=True, exist_ok=True)
+				if checkImageFilename(profileImage.filename):
+					secureFilename = secure_filename(profileImage.filename)
+					imagePath = os.path.realpath(os.path.join(UPLOADS_FOLDER, secureFilename))
+					print("IMAGE_PATH: ", imagePath, "STATIC: ", url_for('static', filename='images/uploads/man2.jpg'))
 					profileImage.save(imagePath)
+				else:
+					error = 'Image not supported! Try a different image'
 
 			hash_pwd = generate_password_hash(password)
 			query = 'INSERT INTO users (username, password, profile_img_url) values (?, ?, ?)'
@@ -115,7 +135,8 @@ def loadCurrentUser():
 @blueprint.route('/logout')
 def logout():
 	query = "UPDATE users SET isOnline = 0 WHERE id == ?"
-	database.execute(query, (session['user_id']))
+	database = getDatabase()
+	database.execute(query, (str(session['user_id'])))
 	database.commit()
 	session.clear()
 	return redirect(url_for('auth.login'))
