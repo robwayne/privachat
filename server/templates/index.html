@@ -16,13 +16,17 @@
     <div class="right-container">
       <div class="chat-container" id="chat-container">
         {% for message in messages %}
-          <div {% if g.user['username'] == message['sender'] %} class="usersmessage" {% else %} class="message" {% endif %}>
-            <div>
-              <p class="msg-body">{{ message['msg'] }}</p>
-              <p class="msg-info">by <span class="message-sender">{{ message['sender'] }} </span> at {{ message['time_sent'].strftime("%I:%M") }}</p>
+          <div {% if g.user['username'] == message['sender'] %} class="message users-message" {% else %} class="message" {% endif %}>
+            <div class="user-msg-info">
+             <!-- <img src="{{ message['profile_img_url'] }}"> -->
+				 	    <img src="/Users/admin/Downloads/Privachat/instance/images/uploads/man2.jpg">
+				 	    <p> {{ message['sender'] }} </p>
+				    </div>
+				    <div class="message-detail">
+				 	    <p {% if g.user['username'] == message['sender'] %} class="users-msg-body" {% else %} class="msg-body" {% endif %}>{{ message['msg'] }}</p>
+              <p class="msg-time">{{ message['time_sent'].strftime("%I:%M") }}</p>
             </div>
-          </div>
-          <br>
+       	  </div>
         {% endfor %}
       </div>
       <form class="message-controls" method="post">

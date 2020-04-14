@@ -38,17 +38,14 @@ def initDatabase():
 @click.command('initDatabaseCLI')
 @with_appcontext
 def initDatabaseCLICommand():
-	print("inside module3")
 	initDatabase()
 	click.echo('*** Database initialized *****')
 	
 
 # connect the database to the actual pythion app 
 def initAppDatabase(app):
-	print("inside module")
 	# close the previous database connection if there is one
 	app.teardown_appcontext(closeDatabase)
-	print("inside module2")
 	#add the databse cli command to the current app obj
 	app.cli.add_command(initDatabaseCLICommand)
 		

@@ -5,13 +5,15 @@
 {% endblock %}
 
 {% block content %}
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     <label for="username">Username</label>
     <input class="auth" name="username" id="username" required>
     <label for="password">Password</label>
     <input class="auth" type="password" name="password" id="password" required>
     <label for="confpassword">Confirm Password</label>
     <input class="auth" type="password" name="confpassword" id="confpassword" required>
+    <label for="profileimage">Upload Profile Picture: </label>
+    <input class="auth" type="file" id="profileimage" name="profileimage">
     <input class="auth" type="submit" value="Register">
   </form>
 {% endblock %}
