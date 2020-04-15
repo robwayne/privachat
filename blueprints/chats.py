@@ -65,19 +65,26 @@ def privateChat(author_id, receiver_id):
 	messages = []
 
 	# find the chat and its id that is specific to these users
-	query = ("SELECT chats.id FROM chats JOIN users ON chats.author_id == users.id "
-			"UNION SELECT chats.id FROM chats JOIN users ON chats.receiver_id == users.id "
-			"WHERE chats.author_id == ? OR chats.receiver_id == ?")
+	query = ("SELECT chats.id FROM chats "
+			"LEFT JOIN users ON chats.author_id == users.id "
+			"WHERE chats.author_id == ? AND chats.receiver_id == ?")
 
-	chatId = database.execute(query, (author_id, receiver_id)).fetchone()['id']
+	chatId = database.execute(query, (author_id, receiver_id)).fetchone()
 
+	#reverse query and check again if nothing found
+	if not chatId:
+		chatId = database.execute(query, (receiver_id, author_id)).fetchone()
+
+	#if still no chat is found - assume it doesnt exist and create a new one
 	if not chatId:
 		query = 'INSERT INTO chats (author_id, receiver_id) values (?,?)'
 		lastInsertedRowId = database.execute(query, (author_id, receiver_id)).lastrowid
 		query = 'SELECT id FROM chats WHERE rowid == ?'
-		chatId = database.execute(query, (lastInsertedRowId,)).fetchone()['id']
+		chatId = database.execute(query, (lastInsertedRowId,)).fetchone()
 
-	if request.method == 'POST':
+	chatId = chatId['id'] if chatId else 0
+
+	if request.method == 'POST': 
 		enteredText = request.form['messagebox'] # remember to check if request sanitizes the input for me
 		if enteredText: #if the message is not empty
 			if g.user:
