@@ -113,7 +113,7 @@ def login():
 			print(user['profile_img_url'])
 			database.execute(query, (str(user['id'])))
 			database.commit()
-			return redirect(url_for('index'))
+			return redirect(url_for('chats.index'))
 
 		flash(error)
 

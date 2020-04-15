@@ -1,5 +1,7 @@
 DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS chats;
 DROP TABLE IF EXISTS users;
+
 
 
 CREATE TABLE users (
@@ -14,11 +16,17 @@ CREATE TABLE users (
 CREATE TABLE messages (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	msg TEXT NOT NULL,
-	sender TEXT NOT NULL,
 	sender_id INTEGER NOT NULL,
 	time_sent TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	profile_img_url TEXT,
-	FOREIGN KEY (sender) REFERENCES users (username),
+	belongs_to INTEGER, 
 	FOREIGN KEY (sender_id) REFERENCES users(id),
-	FOREIGN KEY (profile_img_url) REFERENCES users (profile_img_url)
+	FOREIGN KEY (belongs_to) REFERENCES chats (id)
+);
+
+CREATE TABLE chats (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	author_id INTEGER NOT NULL,
+	receiver_id INTEGER NOT NULL,
+	FOREIGN KEY (author_id) REFERENCES users (id),
+	FOREIGN KEY (receiver_id) REFERENCES users (id)
 );

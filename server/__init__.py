@@ -1,10 +1,10 @@
-from flask import Flask, render_template, current_app
+from flask import Flask, render_template, redirect, url_for
 import os
 import functools
 
 from db import sqlitedb
 from blueprints.auth import blueprint as auth_blueprint
-from blueprints.messages import blueprint as messages_blueprint
+from blueprints.chats import blueprint as chats_blueprint
 
 # https://flask.palletsprojects.com/en/1.1.x/tutorial/database/
 
@@ -24,10 +24,12 @@ except OSError:
 
  #here im also registering all the authentication and message views with the app   
 app.register_blueprint(auth_blueprint)
-app.register_blueprint(messages_blueprint)
-app.add_url_rule('/', endpoint='index') # setting the home to be '/' and to use the index.html template
+app.register_blueprint(chats_blueprint)
+
+# setting the home to be '/' and to use the chat url
+@app.route('/')
+def redirectToChat():
+    return redirect(url_for('chats.index'), code=302)
+
 
 sqlitedb.initAppDatabase(app)
-
-
-# return app
