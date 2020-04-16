@@ -11,7 +11,16 @@
         <h3>Online Users</h3>
         {% for user in onlineUsers %}
           <div class="online-user" id="{{g.user['id']}}-{{user['id']}}">
-            <span class="onlineStatus online"></span>
+            <span class="offlineStatus online"></span>
+            {{ user['username'] }}
+          </div>
+        {% endfor %}
+      </div>
+      <div class="offline-users">
+        <h3>Offline Users</h3>
+        {% for user in offlineUsers %}
+          <div class="offline-user" id="{{g.user['id']}}-{{user['id']}}">
+            <span class="offlineStatus"></span>
             {{ user['username'] }}
           </div>
         {% endfor %}

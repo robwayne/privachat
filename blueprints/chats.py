@@ -1,17 +1,18 @@
-from flask import Blueprint, g, redirect, render_template, request, url_for
+from flask import Blueprint, g, redirect, render_template, request, url_for, flash
 from werkzeug.exceptions import abort
 from datetime import datetime
+from time import sleep
 
 from blueprints.auth import loginRequired
 from db.sqlitedb import getDatabase
-from inspect import getmembers
 
 blueprint = Blueprint('chats', __name__, url_prefix='/chat')
 
-def getOnlineUsers(db):
-	query = 'SELECT * from users WHERE isOnline == 1 AND id <> ?'
-	onlineUsers = db.execute(query, (str(g.user['id']))).fetchall()
-	return onlineUsers
+def getUsersWithOnlineStatus(db, online=True):
+	query = 'SELECT * from users WHERE isOnline == ? AND id <> ?'
+	online = 1 if online else 0
+	users = db.execute(query, (online, str(g.user['id']))).fetchall()
+	return users
 	
 def getMessages(db, forChatId=None):
 	query = ("SELECT distinct users.username, users.profile_img_url, "
@@ -51,17 +52,23 @@ def index():
 			return redirect(url_for('chats.index')) # we then redirect them back to the current index.html page so they can continue messging
 	
 	messages = getMessages(database) # get a list of all the messages and show them
-	for message in messages:
-		print(message['username'])
-	onlineUsers = getOnlineUsers(database)
+
+	onlineUsers = getUsersWithOnlineStatus(database)
+	offlineUsers = getUsersWithOnlineStatus(database, online=False)
 	
-	return render_template('index.html', messages=messages, onlineUsers=onlineUsers, title='Universal Chat') # the home page (index) template will display all the messages
+	return render_template('index.html', messages=messages, onlineUsers=onlineUsers, title='Universal Chat', offlineUsers=offlineUsers) # the home page (index) template will display all the messages
 
 @blueprint.route('/<author_id>/<receiver_id>', methods=['GET', 'POST'])
 @loginRequired  # require each user to be logged in before viewing the home page
 def privateChat(author_id, receiver_id):
+
+	# ensure the current user trying to access this route - is actually a member of the chat
+	if str(g.user['id']) not in [author_id, receiver_id]:
+		return redirect(url_for('chats.index')) # else if not - redirect them back to the Universal Chat
+
 	database = getDatabase()
-	onlineUsers = getOnlineUsers(database)
+	onlineUsers = getUsersWithOnlineStatus(database)
+	offlineUsers = getUsersWithOnlineStatus(database, online=False)
 	messages = []
 
 	# find the chat and its id that is specific to these users
@@ -97,5 +104,5 @@ def privateChat(author_id, receiver_id):
 			return redirect(request.url) 
 
 	messages = getMessages(database, forChatId=chatId)
-	return render_template('index.html', messages=messages, onlineUsers=onlineUsers, title='Private Message')
+	return render_template('index.html', messages=messages, onlineUsers=onlineUsers, title='Private Message', offlineUsers=offlineUsers)
 

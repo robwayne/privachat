@@ -276,7 +276,7 @@ html {
     border-right: 1px solid rgb(202, 202, 202);
   }
 
-  .online-user {
+  .online-user, .offline-user {
     font-size: 13px;
     color: #000;
     font-weight: 600;
@@ -287,17 +287,17 @@ html {
     align-items: center;
   }
 
-  .online-user:hover {
+  .online-user:hover, .offline-user:hover {
     cursor: pointer;
     background-color: #4e1486;
     color: white;
   }
 
-  .online-user:hover > .onlineStatus {
+  .online-user:hover > .onlineStatus, .offline-user:hover > .offlineStatus {
     background-color: white;
   }
 
-  .onlineStatus {
+  .offlineStatus {
     max-width: 10px;
     width: 8px;
     height: 8px;
