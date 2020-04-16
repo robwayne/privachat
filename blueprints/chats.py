@@ -14,6 +14,11 @@ def getUsersWithOnlineStatus(db, online=True):
 	users = db.execute(query, (online, str(g.user['id']))).fetchall()
 	return users
 	
+# def getUsersChats(db):
+# 	query = 'SELECT distict chats.id, users.username FROM users JOIN chats ON users.id == chats.author_id OR users.id == chats.receiver_id WHERE chats.author_id == ? OR chats.receiver_id == ?'
+# 	chats = db.execute(query, (str(g.user['id']), str(g.user['id']))).fetchall()
+# 	return chats
+
 def getMessages(db, forChatId=None):
 	query = ("SELECT distinct users.username, users.profile_img_url, "
 		"messages.sender_id, messages.msg, messages.time_sent FROM ((users "
